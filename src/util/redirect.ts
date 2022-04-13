@@ -3,7 +3,7 @@
  * @param {string} resultCode Result code obtained from Adyen API.
  * @returns A url to redirect to.
  */
-export const getRedirectUrl = (resultCode) => {
+export const getRedirectUrl = (resultCode : string) : string => {
   switch (resultCode) {
     case "Authorised":
       return "/status/success";

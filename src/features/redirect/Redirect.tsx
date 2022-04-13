@@ -4,12 +4,13 @@ import AdyenCheckout from "@adyen/adyen-web";
 import "@adyen/adyen-web/dist/adyen.css";
 import { useLocation, useNavigate } from "react-router";
 import { getRedirectUrl } from "../../util/redirect";
+import { RootState } from "../../app/store";
 
 // This class is used to finalize redirect flows for some payment methods
 export const RedirectContainer = () => {
   const location = useLocation();
 
-  const payment = useSelector(state => state.payment);
+  const payment = useSelector((state: RootState) => state.payment);
 
   const navigate = useNavigate();
 
@@ -23,9 +24,9 @@ export const RedirectContainer = () => {
       const checkout = await AdyenCheckout({
         ...config,
         session: { id: sessionId },
-        onPaymentCompleted: (response, _component) =>
+        onPaymentCompleted: (response: { resultCode: string }) =>
           navigate(getRedirectUrl(response.resultCode), { replace: true }),
-        onError: (error, _component) => {
+        onError: (error: { message: string }) => {
           console.error(error);
           navigate(`/status/error?reason=${error.message}`, { replace: true });
         },

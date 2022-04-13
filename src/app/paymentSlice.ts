@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 export const slice = createSlice({
   name: "payment",
@@ -6,7 +6,7 @@ export const slice = createSlice({
     error: "",
     session: null,
     orderRef: null,
-    paymentDataStoreRes: null,
+    paymentDataStoreRes: {} as Record<string, Payment>,
     config: {
       storePaymentMethod: true,
       paymentMethodsConfiguration: {
@@ -56,29 +56,37 @@ export const slice = createSlice({
 
 export const { paymentSession, clearPaymentSession, paymentDataStore } = slice.actions;
 
-export const initiateCheckout = (type) => async (dispatch) => {
-  const response = await fetch(`/api/sessions?type=${type}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  dispatch(paymentSession([await response.json(), response.status]));
-};
+export const initiateCheckout = createAsyncThunk(
+  'initiateCheckout', async (type: string, { dispatch }) => {
+    const response = await fetch(`/api/sessions?type=${type}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    dispatch(paymentSession([await response.json(), response.status]));
+  }
+);
 
-export const getPaymentDataStore = () => async (dispatch) => {
-  const response = await fetch("/api/getPaymentDataStore");
-  dispatch(paymentDataStore([await response.json(), response.status]));
-};
+export const getPaymentDataStore = createAsyncThunk(
+  'getPaymentDataStore',
+  async (_, { dispatch }) => {
+    const response = await fetch("/api/getPaymentDataStore");
+    dispatch(paymentDataStore([await response.json(), response.status]));
+  }
+);
 
-export const cancelOrRefundPayment = (orderRef) => async (dispatch) => {
-  await fetch(`/api/cancelOrRefundPayment?orderRef=${orderRef}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  dispatch(getPaymentDataStore());
-};
+export const cancelOrRefundPayment = createAsyncThunk(
+  'cancelOrRefundPayment',
+  async (orderRef : string, { dispatch }) => {
+    await fetch(`/api/cancelOrRefundPayment?orderRef=${orderRef}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    dispatch(getPaymentDataStore());
+  }
+);
 
 export default slice.reducer;

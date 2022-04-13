@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getPaymentDataStore, cancelOrRefundPayment } from "../../app/paymentSlice";
+import { RootState } from "../../app/store";
 
 export const CancelContainer = () => (
   <main className="preview-page">
@@ -20,7 +21,7 @@ const CancelList = () => {
     dispatch(getPaymentDataStore());
   }, [dispatch]);
 
-  const paymentDataStore = useSelector((state) => state.payment.paymentDataStoreRes);
+  const paymentDataStore = useSelector((state: RootState) => state.payment.paymentDataStoreRes);
 
   if (!paymentDataStore) {
     return (
@@ -43,7 +44,7 @@ const CancelList = () => {
   )
 };
 
-const CancelItem = ({ payment }) => {
+const CancelItem : React.FC<{payment : Payment}> = ({ payment }) => {
   const dispatch = useDispatch();
 
   return (

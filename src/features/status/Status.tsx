@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useParams, useLocation } from "react-router-dom";
 
-export const Message = ({ type, reason }) => {
+export const Message: React.FC<{ type?: string, reason: string | null }> = ({ type, reason }) => {
   let msg, img;
   switch (type) {
     case "pending":
@@ -29,7 +29,7 @@ export const Message = ({ type, reason }) => {
   return (
     <>
       <img src={`/images/${img}.svg`} className="status-image" alt={img} />
-      {["failed", "error"].includes(type) ? null : <img src="/images/thank-you.svg" className="status-image" alt="thank-you" />}
+      {["failed", "error"].includes(type ?? "") ? null : <img src="/images/thank-you.svg" className="status-image" alt="thank-you" />}
       <p className="status-message">{msg}</p>
     </>
   );
@@ -38,7 +38,7 @@ export const Message = ({ type, reason }) => {
 export const StatusContainer = () => {
   let { type } = useParams();
   let query = new URLSearchParams(useLocation().search);
-  let reason = query ? query.get("reason") : "";
+  let reason = query ? query.get("reason") : null;
 
   return (
     <div className="status-container">
